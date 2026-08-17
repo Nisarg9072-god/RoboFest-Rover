@@ -1,0 +1,62 @@
+# =============================================================================
+# .gitignore — ROBOFEST Rover
+# =============================================================================
+
+# ── ROS 2 workspace build artifacts ─────────────────────────────────────────
+build/
+install/
+log/
+*.pyc
+__pycache__/
+*.egg-info/
+.colcon_install_layout
+
+# ── ROS 2 bag files ───────────────────────────────────────────────────────────
+logs/*.db3
+logs/*.yaml
+*.bag
+*.bag.active
+
+# ── Python ───────────────────────────────────────────────────────────────────
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+dist/
+.eggs/
+*.egg
+
+# ── CMake ────────────────────────────────────────────────────────────────────
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# ── Arduino ──────────────────────────────────────────────────────────────────
+arduino_firmware/**/*.elf
+arduino_firmware/**/*.hex
+arduino_firmware/**/*.map
+
+# ── OS files ─────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.code-workspace
+
+# ── Map files (generated — large binary, re-built before competition) ────────
+maps/*.pgm
+
+# ── Sensitive / local config ──────────────────────────────────────────────────
+*.env
+secrets.yaml
+
+# ── Simulation generated files ────────────────────────────────────────────────
+*.world.bak

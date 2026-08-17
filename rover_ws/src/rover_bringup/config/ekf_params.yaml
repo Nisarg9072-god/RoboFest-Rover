@@ -1,0 +1,89 @@
+# =============================================================================
+# ekf_params.yaml
+# Extended Kalman Filter configuration for rover_localization (robot_localization)
+#
+# Status: PLANNED — all gain/noise values are TBD and must be tuned on hardware.
+#
+# Fuses:
+#   - /odom      (encoder odometry from Arduino via encoder_interface_node)
+#   - /imu/data  (MPU-9250 / BNO085)
+#   - /gps/fix   (optional — disabled by default)
+# =============================================================================
+
+ekf_node:
+  ros__parameters:
+
+    # Update frequency (Hz). Higher = lower latency, higher CPU.
+    # Recommended start: 50 Hz. Tune if EKF diverges.
+    frequency: 50.0
+
+    # If a sensor has not published within this time (seconds), it is
+    # treated as unavailable. Do not set too low on a loaded system.
+    sensor_timeout: 0.1
+
+    # 2D mode: constrains state to x, y, yaw only.
+    # Set true for a ground rover operating on flat/near-flat terrain.
+    two_d_mode: true
+
+    # Publish the transform between odom and base_link.
+    publish_tf: true
+
+    # Frame IDs — must match URDF and other node configs.
+    map_frame: map
+    odom_frame: odom
+    base_link_frame: base_link
+    world_frame: odom       # 'odom' for wheel odometry; 'map' if using GPS globally
+
+    # -------------------------------------------------------------------------
+    # Encoder odometry input (from Arduino via encoder_interface_node)
+    # -------------------------------------------------------------------------
+    odom0: /odom
+    odom0_config:
+      # [x,    y,     z,      # position
+      #  roll, pitch, yaw,    # orientation
+      #  vx,   vy,    vz,     # linear velocity
+      #  vroll,vpitch,vyaw,   # angular velocity
+      #  ax,   ay,    az]     # linear acceleration
+      - [true,  true,  false,
+         false, false, true,
+         true,  true,  false,
+         false, false, true,
+         false, false, false]
+    odom0_differential: false
+    odom0_relative: false
+    # Covariance — TBD. Increase if odometry drifts quickly.
+    # odom0_pose_covariance_override: [...]
+    # odom0_twist_covariance_override: [...]
+
+    # -------------------------------------------------------------------------
+    # IMU input (MPU-9250 / BNO085)
+    # -------------------------------------------------------------------------
+    imu0: /imu/data
+    imu0_config:
+      - [false, false, false,
+         false, false, true,    # yaw from IMU orientation
+         false, false, false,
+         false, false, true,    # angular velocity z (yaw rate)
+         false, false, false]
+    imu0_differential: false
+    imu0_relative: false
+    imu0_remove_gravitational_acceleration: true
+
+    # -------------------------------------------------------------------------
+    # GPS input — DISABLED by default (set to true only if GPS is used)
+    # -------------------------------------------------------------------------
+    # odom1: /gps/odom              # convert NavSatFix → Odometry via navsat_transform_node
+    # odom1_config: [...]
+
+    # -------------------------------------------------------------------------
+    # Process noise covariance Q — TBD, tune after hardware bring-up
+    # -------------------------------------------------------------------------
+    # process_noise_covariance: [...]
+
+    # -------------------------------------------------------------------------
+    # Initial estimate covariance P0 — TBD
+    # -------------------------------------------------------------------------
+    # initial_estimate_covariance: [...]
+
+    # Print debug diagnostics (disable for competition to save CPU)
+    print_diagnostics: true

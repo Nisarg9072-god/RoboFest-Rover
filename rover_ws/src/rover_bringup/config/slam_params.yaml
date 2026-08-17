@@ -1,0 +1,95 @@
+# =============================================================================
+# slam_params.yaml
+# slam_toolbox configuration for the ROBOFEST rover
+#
+# Status: PLANNED — must be validated on hardware after LiDAR bring-up.
+#
+# Two modes:
+#   online_async  : online SLAM (Mode B — unknown environment)
+#   localization  : localise against a pre-built map (Mode A — known map)
+#
+# For competition runs on a fixed track, MODE A is preferred:
+#   slam_mode: localization
+#   map_file_name: <path to pre-built .posegraph>
+# =============================================================================
+
+slam_toolbox:
+  ros__parameters:
+
+    # Solver plugin — default is satisfactory for 2D LiDAR SLAM
+    solver_plugin: solver_plugins::CeresSolver
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY
+    ceres_preconditioner: SCHUR_JACOBI
+    ceres_trust_strategy: LEVENBERG_MARQUARDT
+    ceres_dogleg_type: TRADITIONAL_DOGLEG
+    ceres_loss_function: None
+
+    # Mode: "mapping" for online SLAM, "localization" for known-map mode
+    # Change to "localization" before competition after map is built.
+    mode: mapping
+
+    # Pre-built map for localization mode (Mode A)
+    # Uncomment and set path before competition
+    # map_file_name: /path/to/competition_track
+    # map_start_at_dock: true
+
+    # Frame IDs — must match URDF and EKF config
+    odom_frame: odom
+    map_frame: map
+    base_frame: base_link
+    scan_topic: /scan
+
+    # Resolution of the occupancy grid (metres per cell)
+    # 0.05 = 5 cm resolution. Reduce if detail needed; increase if CPU limited.
+    resolution: 0.05
+
+    # Maximum laser range to use (metres). Set to LiDAR max range (TBD).
+    max_laser_range: 12.0        # TBD — set to actual LiDAR range
+
+    # Minimum laser range to use. Ignore returns closer than this.
+    minimum_travel_distance: 0.05
+    minimum_travel_heading: 0.1
+
+    # Scan buffer size. Larger = more history, more memory.
+    scan_buffer_size: 10
+    scan_buffer_maximum_scan_distance: 10.0
+
+    # Loop closure — distance rover must travel before a loop closure check
+    loop_search_maximum_distance: 3.0
+    do_loop_closing: true
+    loop_match_minimum_chain_size: 10
+    loop_match_maximum_variance_coarse: 3.0
+    loop_match_minimum_response_coarse: 0.35
+    loop_match_minimum_response_fine: 0.45
+
+    # Correlation search window for fine scan matching
+    correlation_search_space_dimension: 0.5
+    correlation_search_space_resolution: 0.01
+    correlation_search_space_smear_deviation: 0.1
+
+    # Loop closure search window
+    loop_search_space_dimension: 8.0
+    loop_search_space_resolution: 0.05
+    loop_search_space_smear_deviation: 0.03
+
+    # Map update rate (Hz). Keep low to reduce CPU load.
+    map_update_interval: 5.0
+
+    # Whether to publish map continuously or only on update
+    publish_period_sec: 1.0
+
+    # Stack size for scan matching thread
+    stack_size_to_use: 40000000
+
+    # Enable interactive mode (disable in competition for performance)
+    interactive_mode: false
+
+    # TF publishing
+    enable_interactive_mode: false
+    use_scan_matching: true
+    use_scan_barycenter: true
+
+    throttle_scans: 1          # process every Nth scan (1 = all)
+    transform_publish_period: 0.02
+    transform_timeout: 0.2
+    tf_buffer_duration: 30.0
