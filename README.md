@@ -1,4 +1,4 @@
-# Autonomous Rocker-Bogie Rover — ROBOFEST!!
+# Autonomous Rocker-Bogie Rover — ROBOFEST!!!
 
 > **Competition-grade autonomous six-wheel rover for ROBOFEST.**
 > Obstacle navigation · terrain traversal · dynamic obstacle avoidance · precision autonomous parking.
