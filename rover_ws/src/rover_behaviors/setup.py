@@ -20,7 +20,9 @@ setup(
     entry_points={
         'console_scripts': [
             'behavior_manager_node = rover_behaviors.behavior_manager_node:main',
-            # mission_manager_node, parking_node, recovery_node: TBD
+            'mission_manager_node = rover_behaviors.mission_manager_node:main',
+            'parking_node = rover_behaviors.parking_node:main',
+            'recovery_node = rover_behaviors.recovery_node:main',
         ],
     },
 )

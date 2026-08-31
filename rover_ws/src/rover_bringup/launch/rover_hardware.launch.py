@@ -57,6 +57,7 @@ def generate_launch_description():
     perc_pkg      = FindPackageShare("rover_perception")
     behav_pkg     = FindPackageShare("rover_behaviors")
     safety_pkg    = FindPackageShare("rover_safety")
+    manip_pkg     = FindPackageShare("rover_manipulation")
 
     # ── Sub-launch includes ─────────────────────────────────────────────────
     description_launch = IncludeLaunchDescription(
@@ -125,6 +126,13 @@ def generate_launch_description():
         launch_arguments={"use_sim_time": use_sim_time}.items(),
     )
 
+    manipulation_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([manip_pkg, "launch", "manipulation.launch.py"])
+        ),
+        launch_arguments={"use_sim_time": use_sim_time}.items(),
+    )
+
     return LaunchDescription(
         [
             use_sim_time_arg,
@@ -141,6 +149,7 @@ def generate_launch_description():
             TimerAction(period=6.0, actions=[perception_launch]),
             # Safety must start before behaviours
             TimerAction(period=7.0, actions=[safety_launch]),
+            TimerAction(period=7.5, actions=[manipulation_launch]),
             TimerAction(period=8.0, actions=[behaviors_launch]),
             LogInfo(msg="[rover_bringup] All subsystems launched. Awaiting SELF_CHECK."),
         ]
