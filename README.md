@@ -1396,6 +1396,21 @@ stateDiagram-v2
 | Local replan finds path | Execute alternate path |
 | Local replan fails | Trigger recovery |
 
+### 21.4 Robotic Arm & Movable Obstacle Workflow
+
+When a small, movable obstacle blocks the rover's path, the `manipulation_manager_node` executes the following sequence:
+
+1. **Classify**: The obstacle is identified as small, movable, and within the arm's safe operating envelope.
+2. **Stop**: The rover halts navigation and maintains a stationary, safe pose.
+3. **Pre-Pick**: The 4-DOF arm moves from the `STOW` position to the `PRE_PICK` position above the object.
+4. **Grip**: The arm lowers, and the `gripper_controller_node` actuates to grasp the object. Grip verification occurs.
+5. **Move Aside**: The arm lifts the object and rotates to a safe side position outside the rover's path.
+6. **Release**: The gripper opens to drop the object.
+7. **Stow**: The arm returns to the secure `STOW` position.
+8. **Resume**: The `mission_manager_node` is signaled to resume autonomous navigation.
+
+> **Safety Rule**: The rover must be completely stationary before any arm manipulation begins. The arm will NOT perform a pick/place action while the rover is driving.
+
 ---
 
 ## 22. Motion Control
