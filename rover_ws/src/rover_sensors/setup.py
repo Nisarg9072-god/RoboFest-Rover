@@ -19,8 +19,11 @@ setup(
     license='MIT',
     entry_points={
         'console_scripts': [
-            'tof_node       = rover_sensors.tof_node:main',
-            # lidar_node, camera_node, imu_node, ultrasonic_node: TBD
+            'tof_node = rover_sensors.tof_node:main',
+            'lidar_node = rover_sensors.lidar_node:main',
+            'camera_node = rover_sensors.camera_node:main',
+            'imu_node = rover_sensors.imu_node:main',
+            'ultrasonic_node = rover_sensors.ultrasonic_node:main',
         ],
     },
 )
