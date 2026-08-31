@@ -301,6 +301,9 @@ flowchart TD
         PKG["Parking Node"]
         REC["Recovery Node"]
         MM["Mission Manager"]
+        ARM_M["Manipulation Manager"]
+        ARM_C["Arm Controller"]
+        GRP_C["Gripper Controller"]
         MC["Motion Controller"]
         SC["Safety Controller"]
     end
@@ -350,7 +353,7 @@ flowchart TD
     GPS_S -.->|"/gps/fix (optional)"| SF
     ENC_S -->|"encoder ticks"| ENC_R
 
-    ROS2 --> SF & LOC & SLAM_N & GP & LP & BM & PKG & REC & MM & MC
+    ROS2 --> SF & LOC & SLAM_N & GP & LP & BM & PKG & REC & MM & ARM_M & ARM_C & GRP_C & MC
     PERC --> BM
     SF --> LOC
     LOC --> GP
@@ -729,6 +732,12 @@ graph TD
         RCN["recovery_node"]
     end
 
+    subgraph MANIPULATION_GRP["Manipulation Nodes"]
+        ARMM["manipulation_manager_node"]
+        ARMC["arm_controller_node"]
+        GRPC["gripper_controller_node"]
+    end
+
     subgraph CONTROL_GRP["Control & Safety Nodes"]
         MCN["motion_controller_node"]
         AIN["arduino_interface_node\n(serial TX/RX)"]
@@ -740,6 +749,7 @@ graph TD
     BU_N -.->|launches| SFN & LOCN & SLAMN
     BU_N -.->|launches| GPN & LPN & OAN
     BU_N -.->|launches| BMN & MMN & PKN & RCN
+    BU_N -.->|launches| ARMM & ARMC & GRPC
     BU_N -.->|launches| MCN & AIN & SCN
 
     LN -->|"/scan"| SFN & SLAMN & OBSN
@@ -898,6 +908,30 @@ graph TD
 | **Responsibility** | Top-level behavior arbiter. Decides which module controls motion at any time |
 | **Inputs** | All perception, localization, diagnostics |
 | **Outputs** | Active mode, goal poses, recovery triggers |
+| **Status** | 🟡 Planned |
+
+### `manipulation_manager_node`
+| Field | Detail |
+|---|---|
+| **Responsibility** | Coordinates arm sequence, object pickup and placement, verifies grip |
+| **Inputs** | `/camera/detections`, `/localization/pose`, arm feedback |
+| **Outputs** | Arm commands |
+| **Status** | 🟡 Planned |
+
+### `arm_controller_node`
+| Field | Detail |
+|---|---|
+| **Responsibility** | Drives 4 DOF robotic arm |
+| **Inputs** | Joint commands |
+| **Outputs** | Arm state |
+| **Status** | 🟡 Planned |
+
+### `gripper_controller_node`
+| Field | Detail |
+|---|---|
+| **Responsibility** | Drives robotic hand/gripper |
+| **Inputs** | Grip commands |
+| **Outputs** | Grip state, grip verification |
 | **Status** | 🟡 Planned |
 
 ### `mission_manager_node`
@@ -1320,6 +1354,13 @@ stateDiagram-v2
     NORMAL_NAVIGATION --> OBSTACLE_DETECTED : obstacle enters path
 
     OBSTACLE_DETECTED --> IS_PATH_BLOCKED
+    OBSTACLE_DETECTED --> CLASSIFY_OBSTACLE
+
+    CLASSIFY_OBSTACLE --> MOVABLE_AND_REACHABLE : Small + Movable
+    MOVABLE_AND_REACHABLE --> STOP_ROVER : pick sequence
+    STOP_ROVER --> ARM_MANIPULATION : arm pick & place
+    ARM_MANIPULATION --> RE_SCAN_AND_REPLAN
+    RE_SCAN_AND_REPLAN --> NORMAL_NAVIGATION
 
     IS_PATH_BLOCKED --> DECELERATE : YES — path blocked
     IS_PATH_BLOCKED --> NORMAL_NAVIGATION : NO — path clear, continue
@@ -2144,6 +2185,14 @@ rover_ws/                              ← ROS 2 workspace root
 │   │   │   ├── mission_manager_node.py
 │   │   │   ├── parking_node.py
 │   │   │   └── recovery_node.py
+│   │   ├── config/
+│   │   └── package.xml
+│   │
+│   ├── rover_manipulation/            🟡 PLANNED
+│   │   ├── rover_manipulation/
+│   │   │   ├── manipulation_manager_node.py
+│   │   │   ├── arm_controller_node.py
+│   │   │   └── gripper_controller_node.py
 │   │   ├── config/
 │   │   └── package.xml
 │   │
