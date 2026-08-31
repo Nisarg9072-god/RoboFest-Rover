@@ -1,4 +1,4 @@
-﻿from setuptools import setup
+from setuptools import setup
 
 package_name = 'rover_navigation'
 
@@ -19,6 +19,8 @@ setup(
     license='MIT',
     entry_points={
         'console_scripts': [
+            'global_planner_node = rover_navigation.global_planner_node:main',
+            'local_planner_node = rover_navigation.local_planner_node:main',
         ],
     },
 )
